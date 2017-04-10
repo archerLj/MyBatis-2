@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archer.mybatis.MyMapper">
+
+    <select id="selectAuthor" resultMap="authorResult">
+        SELECT
+        id,
+        username,
+        nickname,
+        birthday,
+        register_time
+        FROM author
+        WHERE id = #{id}
+    </select>
+    <resultMap id="authorResult" type="Author">
+        <id property="id" column="id"/>
+        <result property="registerTime" column="register_time"/>
+    </resultMap>
+
+
+    <select id="selectArticle" resultMap="articleMap">
+        SELECT
+        id,
+        title,
+        content,
+        author,
+        create_time,
+        modify_time
+        FROM article
+        WHERE id = #{id}
+    </select>
+    <!--嵌套查询关联文章表-->
+    <resultMap id="articleMap" type="Article">
+        <id property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+        <association property="author" column="author" select="selectAuthor"/>
+    </resultMap>
+
+
+    <select id="selectArticleDetails" resultMap="detailedArticleResultMap">
+        select
+        A.id as article_id,
+        A.title as article_title,
+        A.content as article_content,
+        A.create_time as article_createTime,
+        A.modify_time as article_modifyTime,
+        B.id as author_id,
+        B.username as author_username,
+        B.nickname as author_nickname,
+        B.birthday as author_birthday,
+        B.register_time as author_registerTime,
+        C.id as comment_id,
+        C.content as comment_content,
+        C.create_time as comment_createTime
+        from Article A
+        left outer join Author B on B.id = A.author
+        left outer join Comment C on A.id = C.article
+        where A.id = #{id}
+    </select>
+
+    <!-- Very Complex Result Map -->
+    <resultMap id="detailedArticleResultMap" type="Article">
+        <id property="id" column="article_id"/>
+        <result property="title" column="article_title"/>
+        <result property="content" column="article_content"/>
+        <result property="createTime" column="article_createTime"/>
+        <result property="modifyTime" column="article_modifyTime"/>
+        <association property="author" javaType="Author">
+            <id property="id" column="author_id"/>
+            <result property="username" column="author_username"/>
+            <result property="nickname" column="author_nickname"/>
+            <result property="birthday" column="author_birthday"/>
+            <result property="registerTime" column="author_registerTime"/>
+        </association>
+        <collection property="comments" ofType="Comment" columnPrefix="comment_">
+            <id property="id" column="id"/>
+            <result property="content" column="content"/>
+            <result property="createTime" column="createTime"/>
+        </collection>
+    </resultMap>
+</mapper>

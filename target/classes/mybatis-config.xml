@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--指定属性， 在environment中引用-->
+    <properties>
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+        <property name="driver.useSSL" value="false"/>
+    </properties>
+
+    <!--系统设置-->
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="lazyLoadingEnabled" value="true"/>
+    </settings>
+
+    <!--指定别名，这样在mapper映射文件中就可以直接使用Person,而不用使用com.archer.mybatis.Person这种全路径名-->
+    <typeAliases>
+        <typeAlias type="com.archer.mybatis.Author" alias="Author"/>
+        <typeAlias type="com.archer.mybatis.Article" alias="Article"/>
+        <typeAlias type="com.archer.mybatis.Comment" alias="Comment"/>
+    </typeAliases>
+
+    <!--配置环境，可以配置多个环境用于测试、调试和生产-->
+    <!--这里environments的default字段一定要和下面的所有的environment中的一个的id字段一致，表示选用哪种数据库环境，不然在获取sqlsession的时候会报空指针错误-->
+    <!--### Error opening session.  Cause: java.lang.NullPointerException-->
+    <!--### Cause: java.lang.NullPointerException-->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+
+    <!--配置mapper映射文件-->
+    <mappers>
+        <mapper resource="MyMapper.xml"/>
+    </mappers>
+
+</configuration>
